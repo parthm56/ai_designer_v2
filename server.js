@@ -109,10 +109,64 @@ async function generateImage(prompt, width, height, isTransparent) {
 
 // Placeholder function for background removal since @imgly/background-removal-node has issues
 async function removeBackground(imageBase64) {
-    console.log("Skipping local background removal due to library issues.");
-    // For now, return the original image since the library is causing errors
-    // In the future, this could be replaced with a working background removal service
-    return imageBase64;
+    console.log("Starting background removal (local)...");
+    try {
+        // Import the library using dynamic import
+        const bgRemovalModule = await import('@imgly/background-removal-node');
+
+        // Handle different possible export formats
+        const removeBackgroundLib = bgRemovalModule.default ||
+                                   bgRemovalModule.removeBackground ||
+                                   bgRemovalModule['default'] ||
+                                   Object.values(bgRemovalModule)[0];
+
+        if (typeof removeBackgroundLib !== 'function') {
+            throw new Error('Could not find removeBackground function in the imported module');
+        }
+
+        // Check if the input is a valid data URL
+        if (!imageBase64 || typeof imageBase64 !== 'string') {
+            throw new Error('Invalid image input: expected base64 string');
+        }
+
+        // Check if it's a data URL and extract the base64 part
+        let base64Data;
+        if (imageBase64.startsWith('data:')) {
+            // Extract the base64 portion
+            const matches = imageBase64.match(/^data:image\/(\w+);base64,(.+)$/);
+            if (!matches) {
+                throw new Error('Invalid data URL format');
+            }
+            base64Data = matches[2];
+        } else {
+            base64Data = imageBase64; // assume it's already base64
+        }
+
+        // Convert the base64 string to a Buffer
+        const buffer = Buffer.from(base64Data, 'base64');
+
+        console.log("Calling removeBackgroundLib with buffer of length:", buffer.length);
+
+        // Call the library function - try different input formats as per documentation
+        const resultBlob = await removeBackgroundLib(buffer, {
+            output: {
+                format: 'image/png',
+                quality: 0.8
+            }
+        });
+
+        // Convert result Blob back to base64
+        const arrayBuffer = await resultBlob.arrayBuffer();
+        const resultBuffer = Buffer.from(arrayBuffer);
+        console.log("Background removal successful");
+        return `data:image/png;base64,${resultBuffer.toString('base64')}`;
+    } catch (error) {
+        console.error("Local background removal failed:", error);
+        console.error("Error details:", error.message, error.stack);
+        // Fallback - return original image since local background removal is not working
+        console.log("Returning original image as fallback");
+        return imageBase64;
+    }
 }
 
 // Endpoint to generate layout
