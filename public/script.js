@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         let imageUrl = imageData.url;
 
                         // Remove Background if requested
-                        if (isTransparent) {
+                        /*if (isTransparent) {
                             loadingText.textContent = `Removing background for image ${i + 1}...`;
                             const bgResponse = await fetch('/api/remove-bg', {
                                 method: 'POST',
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const bgData = await bgResponse.json();
                                 imageUrl = bgData.url;
                             }
-                        }
+                        }*/
 
                         // Update Image
                         img.src = imageUrl;
