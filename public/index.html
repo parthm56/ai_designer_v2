@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Flyer Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>AI Flyer Generator</h1>
+            <p>Describe your flyer, poster, or social media post, and let AI design it for you.</p>
+        </header>
+
+        <main>
+            <section class="input-section">
+                <textarea id="user-input" placeholder="E.g., A vibrant summer party flyer with a beach theme, cocktails, and a DJ..."></textarea>
+                <button id="generate-btn">Generate Design</button>
+            </section>
+
+            <section class="preview-section">
+                <div id="loading-indicator" class="hidden">
+                    <div class="spinner"></div>
+                    <p id="loading-text">Generating layout...</p>
+                </div>
+                <div id="poster-container">
+                    <!-- Generated content will appear here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
